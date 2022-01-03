@@ -54,7 +54,9 @@ const App = () => {
         label="Search"
         value={searchTerm}
         onInputChange={handleSearch}
-      />
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
       <hr />
 
@@ -68,10 +70,11 @@ const InputWithLabel = ({
   label, 
   value, 
   type = 'text',
-  onInputChange
+  onInputChange,
+  children
 }) => (
   <React.Fragment>
-    <label htmlFor={id}>{label}</label>
+    <label htmlFor={id}>{children}</label>
     &nbsp;
     <input 
       id={id}
