@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
@@ -39,44 +41,17 @@ const storiesReducer = (state, action) => {
         data: state.data.filter(
           (story) => action.payload.objectID !== story.objectID
         ),
-      };  
+      };
     default:
       throw new Error();
-    }
-  };
+  }
+};
 
 const App = () => {
-  const initialStories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    },
-  ];
-
-const getAsyncStories = () =>
-    new Promise((resolve) =>
-      setTimeout(
-        () => resolve({ data: { stories: initialStories } }),
-        2000
-    )
-  );
-
   const [searchTerm, setSearchTerm] = useSemiPersistentState(
-      'search',
-      'React'
-    );
+    'search',
+    'React'
+  );
 
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
@@ -86,16 +61,17 @@ const getAsyncStories = () =>
   React.useEffect(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    getAsyncStories()
-      .then(result => {
+    fetch(`${API_ENDPOINT}react`)
+      .then((response) => response.json())
+      .then((result) => {
         dispatchStories({
-        type: 'STORIES_FETCH_SUCCESS',
-        payload: result.data.stories,
-      });
-    })
-    .catch(() =>
-      dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
-    );
+          type: 'STORIES_FETCH_SUCCESS',
+          payload: result.hits,
+        });
+      })
+      .catch(() =>
+        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
+      );
   }, []);
 
   const handleRemoveStory = (item) => {
@@ -119,7 +95,6 @@ const getAsyncStories = () =>
 
       <InputWithLabel
         id="search"
-        label="Search"
         value={searchTerm}
         isFocused
         onInputChange={handleSearch}
@@ -134,22 +109,22 @@ const getAsyncStories = () =>
       {stories.isLoading ? (
         <p>Loading ...</p>
       ) : (
-      <List 
-        list={searchedStories} 
-        onRemoveItem={handleRemoveStory} />
+        <List
+          list={searchedStories}
+          onRemoveItem={handleRemoveStory}
+        />
       )}
     </div>
   );
 };
 
 const InputWithLabel = ({
-  id, 
-  label, 
-  value, 
+  id,
+  value,
   type = 'text',
   onInputChange,
   isFocused,
-  children
+  children,
 }) => {
   const inputRef = React.useRef();
 
@@ -164,11 +139,10 @@ const InputWithLabel = ({
       <label htmlFor={id}>{children}</label>
       &nbsp;
       <input
-        ref={inputRef}
         id={id}
+        ref={inputRef}
         type={type}
         value={value}
-        autoFocus={isFocused}
         onChange={onInputChange}
       />
     </React.Fragment>
@@ -177,11 +151,12 @@ const InputWithLabel = ({
 
 const List = ({ list, onRemoveItem }) => (
   <ul>
-    {list.map(( item ) => (
-      <Item key={item.objectID}
-       item={item}
-       onRemoveItem={onRemoveItem}
-  />
+    {list.map((item) => (
+      <Item
+        key={item.objectID}
+        item={item}
+        onRemoveItem={onRemoveItem}
+      />
     ))}
   </ul>
 );
