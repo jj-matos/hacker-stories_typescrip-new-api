@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories';
+const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(
@@ -88,12 +88,12 @@ const getAsyncStories = () =>
   React.useEffect(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}`) // B
-      .then((response) => response.json()) // C
+    fetch(`${API_ENDPOINT}`)
+      .then((response) => response.json())
       .then(result => {
         dispatchStories({
         type: 'STORIES_FETCH_SUCCESS',
-        payload: result.hits, // D
+        payload: result.hits,
       });
     })
     .catch(() =>
@@ -137,11 +137,10 @@ const getAsyncStories = () =>
       {stories.isLoading ? (
         <p>Loading ...</p>
       ) : (
-      <List 
-        list={fetch(`${API_ENDPOINT}`) // B
-          .then((response) => response.json())
-        }
-        onRemoveItem={handleRemoveStory} />
+        <List
+          list={searchedStories}
+          onRemoveItem={handleRemoveStory}
+        />
       )}
     </div>
   );
