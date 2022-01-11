@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories/search?query=';
+const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
 const useSemiPersistentState = (key, initialState) => {
   const [value, setValue] = React.useState(
@@ -53,17 +53,20 @@ const App = () => {
     'React'
   );
 
+  const [url, setUrl] = React.useState(
+    `${API_ENDPOINT}${searchTerm}`
+  );
+
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
     { data: [], isLoading: false, isError: false }
   );
 
   const handleFetchStories = React.useCallback(() => {
-    if (!searchTerm) return;
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
         dispatchStories({
@@ -74,7 +77,7 @@ const App = () => {
       .catch(() =>
         dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
       );
-  }, [searchTerm]);
+  }, [url]);
 
   const handleRemoveStory = (item) => {
     dispatchStories({
@@ -87,8 +90,12 @@ const App = () => {
     handleFetchStories();
     }, [handleFetchStories]);
 
-  const handleSearch = (event) => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   const searchedStories = stories.data.filter((story) =>
@@ -103,10 +110,18 @@ const App = () => {
         id="search"
         value={searchTerm}
         isFocused
-        onInputChange={handleSearch}
+        onInputChange={handleSearchInput}
       >
         <strong>Search:</strong>
       </InputWithLabel>
+
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}
+      >
+        Submit
+      </button>
 
       <hr />
 
