@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 
 const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
@@ -39,7 +40,7 @@ const storiesReducer = (state, action) => {
       return {
         ...state,
         data: state.data.filter(
-          (story) => action.payload.objectID !== story.objectID
+          (story) => action.payload.id !== story.id
         ),
       };
     default:
@@ -66,12 +67,12 @@ const App = () => {
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(url)
-      .then((response) => response.json())
+      axios
+      .get(url)
       .then((result) => {
         dispatchStories({
           type: 'STORIES_FETCH_SUCCESS',
-          payload: result.hits,
+          payload: result.data.items,
         });
       })
       .catch(() =>
@@ -97,10 +98,6 @@ const App = () => {
   const handleSearchSubmit = () => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
-
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div>
@@ -174,7 +171,7 @@ const List = ({ list, onRemoveItem }) => (
   <ul>
     {list.map((item) => (
       <Item
-        key={item.objectID}
+        key={item.id}
         item={item}
         onRemoveItem={onRemoveItem}
       />
@@ -187,9 +184,9 @@ const Item = ({ item, onRemoveItem }) => (
     <span>
       <a href={item.url}>{item.title}</a>
     </span>
-    <span>{item.author}</span>
-    <span>{item.num_comments}</span>
-    <span>{item.points}</span>
+    <span>{item.by}</span>
+    <span>{item.descendants}</span>
+    <span>{item.score}</span>
     <span>
       <button type="button" onClick={() => onRemoveItem(item)}>
         Dismiss
