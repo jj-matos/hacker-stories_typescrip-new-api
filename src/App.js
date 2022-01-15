@@ -1,7 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 
-import './App.css';
+import styles from './App.module.css';
 
 const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
@@ -106,7 +106,7 @@ const App = () => {
     onSearchInput,
     onSearchSubmit,
   }) => (
-    <form onSubmit={onSearchSubmit} className="search-form">
+    <form onSubmit={onSearchSubmit} className={styles.searchForm}>
       <InputWithLabel
         id="search"
         value={searchTerm}
@@ -120,7 +120,7 @@ const App = () => {
       <button 
         type="submit" 
         disabled={!searchTerm}
-        className="button button_large"
+        className={`${styles.button}  ${styles.buttonLarge}`}
       >
         Submit
       </button>
@@ -128,9 +128,8 @@ const App = () => {
   );
 
   return (
-    <div className="container">
-      <h1 className="headline-primary">My Hacker Stories</h1>
-
+    <div className={styles.container}>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -172,7 +171,7 @@ const InputWithLabel = ({
 
   return (
     <React.Fragment>
-      <label htmlFor={id} className="label">
+      <label htmlFor={id} className={styles.label}>
        {children}
       </label>
       &nbsp;
@@ -182,7 +181,7 @@ const InputWithLabel = ({
         type={type}
         value={value}
         onChange={onInputChange}
-        className="input"
+        className={styles.input}
       />
     </React.Fragment>
   );
@@ -201,8 +200,8 @@ const List = ({ list, onRemoveItem }) => (
 );
 
 const Item = ({ item, onRemoveItem }) => (
-<li className="item">
-  <span style={{ width: '40%' }}>
+  <li className={styles.item}>
+    <span style={{ width: '40%' }}>
       <a href={item.url}>{item.title}</a>
     </span>
     <span style={{ width: '30%' }}>{item.author}</span>
@@ -212,7 +211,7 @@ const Item = ({ item, onRemoveItem }) => (
       <button 
         type="button" 
         onClick={() => onRemoveItem(item)}
-        className="button button_small"
+        className={`${styles.button} ${styles.buttonSmall}`}
       >
         Dismiss
       </button>
