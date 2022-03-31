@@ -31,11 +31,15 @@ const useSemiPersistentState = (
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
-  console.log(7);
+
   React.useEffect(() => {
     localStorage.setItem(key, value);
+    console.log('Search (input) value saved on local storage:');
+    console.log(localStorage.getItem(key) || initialState);
   }, [value, key]);
-
+  
+  console.log('return from useSemiPersistentState');
+  console.log(value);
   return [value, setValue];
 };
 
@@ -81,6 +85,7 @@ const storiesReducer = (
         isError: false,
       };
     case 'STORIES_FETCH_SUCCESS':
+      console.log('storiesReducer called. State update: data');
       console.log(action.payload);
       return {
         ...state,
@@ -107,7 +112,8 @@ const storiesReducer = (
 };
 
 const App = () => {
-  console.log(8);
+  console.log('App renders');
+
   const [searchTerm, setSearchTerm] = useSemiPersistentState(
     'search',
     'React'
@@ -127,35 +133,57 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
+  const getAsyncStories = async (fetchedIdList) => {
+    console.log('1-Promise called');
+    console.log(fetchedIdList.data);
+    
+    const storiesArray = [];
+
+    await Promise.all (
+      fetchedIdList.data.map(
+        async (item) => {
+          const story = await axios.get(`https://hacker-news.firebaseio.com/v0/item/${item}.json`);
+          storiesArray.push(story);
+          console.log(story);
+        }
+      )
+    )
+    console.log('Dispaching');
+    console.log(storiesArray);
+
+    dispatchStories({
+      type: 'STORIES_FETCH_SUCCESS',
+      payload: storiesArray,
+    });
+     
+      /* Promise.all(urlIdsArray.data.map(
+        async item => (
+          await fetch (`https://hacker-news.firebaseio.com/v0/item/${item}.json`);
+          (response) => {
+            const story = response.json();
+            storiesArray.push(story);
+            console.log('item pushed');
+          };
+        )
+      ) */
+  };
+
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     try {
-      const result = await axios.get(url);
-      console.log(result.data);
+      const fetchedIdList = await axios.get(url);
+      console.log('Data fetched');
+      console.log(fetchedIdList.data);
 
-      const storiesArray = [];
-
-      const getAsyncStories = () => 
-        Promise.resolve(
-          result.data.map(
-            item => (
-              fetch (`https://hacker-news.firebaseio.com/v0/item/${item}.json`)
-              .then (response => response.json())
-              //.then (console.log(item))
-              .then (story => {
-                storiesArray.push(story)
-              })
-            )
-          )
-        );
-
+      const storiesArray = await getAsyncStories(fetchedIdList);
+      console.log('Array created');
       console.log(storiesArray);
-      console.log(2);
-      //This useEffect doesn't work here - Why?????
+
+      //This useEffect doesn't work here. Gives an error - Why?????
       /*React.useEffect(() => {
         console.log(3);
-      }, []);*/
+      },[]);*/
 
       //This one also not - Why?
       /*React.useEffect(() => {
@@ -170,17 +198,7 @@ const App = () => {
       console.log(4);*/
 
      
-      getAsyncStories().then(() => {
-        console.log(1);
-        console.log(storiesArray);
-        dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: storiesArray,
-        });
-      });
 
-      console.log(5);
-      
 
       //console.log(Stories);
 
@@ -203,6 +221,7 @@ const App = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setSearchTerm(event.target.value);
+    console.log('setSearchTerm called');
   };
 
   const handleRemoveStory = (item: Story) => {
@@ -238,6 +257,7 @@ const App = () => {
 
   return (
     <StyledContainer>
+      {console.log(stories.isLoading)}
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
 
       <SearchForm
@@ -248,14 +268,17 @@ const App = () => {
 
       <hr />
       {stories.isError && <p>Something went wrong ...</p>}
-
+      {console.log(stories.isLoading)}
       {stories.isLoading ? (
         <p>Loading ...</p>
       ) : (
+        <>
+        {console.log(stories.data)}
         <List
           list={stories.data}
           onRemoveItem={handleRemoveStory}
         />
+        </>
       )}
     </StyledContainer>
   );

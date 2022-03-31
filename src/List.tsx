@@ -79,10 +79,13 @@ const List = ({ list, onRemoveItem }: ListProps) => {
     ? sortFunction(list).reverse()
     : sortFunction(list);
 
+  let arrayList = []
+
   return (
   <div>
     <ul>
       <StyledItem>
+        {console.log(list)}
         <StyledColumn width="40%">
           <StyledButtonSmall
             type="button" 
@@ -120,16 +123,14 @@ const List = ({ list, onRemoveItem }: ListProps) => {
         </StyledColumn>
       </StyledItem>
 
-      {console.log(list)}
-
-      {sortedList.map((item) => (
+      {console.log(sortedList)}
+      {sortedList.map ((item) => (
         <Item
           key={item.id}
-          item={item}
+          item={item.data}
           onRemoveItem={onRemoveItem}
         />
       ))}
-      {console.log(list)}
     </ul>
   </div>
   );
@@ -142,6 +143,7 @@ type ItemProps = {
 
 const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
+    {console.log('Item component accessed')}
     <StyledColumn width="40%">
       <a href={item.url}>{item.title}</a>
     </StyledColumn>
