@@ -100,10 +100,12 @@ const storiesReducer = (
         isError: true,
       };
     case 'REMOVE_STORY':
+      console.log(action.payload);
+      console.log(state.data);
       return {
         ...state,
         data: state.data.filter(
-          (story) => action.payload.id !== story.id
+          (story) => action.payload.id !== story.data.id
         ),
       };
     default:
@@ -155,17 +157,7 @@ const App = () => {
       type: 'STORIES_FETCH_SUCCESS',
       payload: storiesArray,
     });
-     
-      /* Promise.all(urlIdsArray.data.map(
-        async item => (
-          await fetch (`https://hacker-news.firebaseio.com/v0/item/${item}.json`);
-          (response) => {
-            const story = response.json();
-            storiesArray.push(story);
-            console.log('item pushed');
-          };
-        )
-      ) */
+
   };
 
   const handleFetchStories = React.useCallback(async () => {
@@ -176,17 +168,11 @@ const App = () => {
       console.log('Data fetched');
       console.log(fetchedIdList.data);
 
-      const storiesArray = await getAsyncStories(fetchedIdList);
-      console.log('Array created');
-      console.log(storiesArray);
+      await getAsyncStories(fetchedIdList);
+      console.log('Data changed in state');
 
-      //This useEffect doesn't work here. Gives an error - Why?????
-      /*React.useEffect(() => {
-        console.log(3);
-      },[]);*/
-
-      //This one also not - Why?
-      /*React.useEffect(() => {
+      //This useEffect doesn't work here. Gives an error - Why?
+            /*React.useEffect(() => {
           getAsyncStories().then(result => {
             console.log(1);
             dispatchStories({
@@ -195,12 +181,12 @@ const App = () => {
             });
           });
       },[]);
-      console.log(4);*/
 
-     
+      //This one also not - Why?
+            /*React.useEffect(() => {
+        console.log(Test use.Effect);
+      },[]);*/
 
-
-      //console.log(Stories);
 
     } catch (error) {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
@@ -225,6 +211,7 @@ const App = () => {
   };
 
   const handleRemoveStory = (item: Story) => {
+    
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item,
@@ -238,8 +225,6 @@ const App = () => {
 
     event.preventDefault();
   };
-
-
 
   /*const setSort = React.useCallback(()) => {
     const [sort, setSort] = React.useState ([]);
@@ -257,6 +242,7 @@ const App = () => {
 
   return (
     <StyledContainer>
+      {console.log(stories.data)}
       {console.log(stories.isLoading)}
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
 

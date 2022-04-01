@@ -52,6 +52,10 @@ type Story = {
   by: string;
   descendants: number;
   score: number;
+  kids: Array<T>;
+  time: number;
+  type: string;
+
 };
 
 type Stories = Array<Story>;
