@@ -55,7 +55,6 @@ type Story = {
   kids: Array<T>;
   time: number;
   type: string;
-
 };
 
 type Stories = Array<Story>;
@@ -63,10 +62,11 @@ type Stories = Array<Story>;
 type ListProps = {
   list: Stories;
   onSortList: string;
+  searchTerm: string;
   onRemoveItem: (item: Story) => void;
 };
 
-const List = ({ list, onRemoveItem }: ListProps) => {
+const List = ({ list, searchTerm, onRemoveItem }: ListProps) => {
   const [sort, setSort] = React.useState({
     sortKey: 'NONE',
     isReverse: false,
@@ -86,57 +86,59 @@ const List = ({ list, onRemoveItem }: ListProps) => {
   let arrayList = []
 
   return (
-  <div>
-    <ul>
-      <StyledItem>
-        {console.log(list)}
-        <StyledColumn width="40%">
-          <StyledButtonSmall
-            type="button" 
-            onClick={() => handleSort('TITLE')}
-          >
-            Title
-          </StyledButtonSmall>
-        </StyledColumn>
-        <StyledColumn width="30%">
-          <StyledButtonSmall
-            type="button" 
-            onClick={() => handleSort('BY')}
-          >
-            Author
-          </StyledButtonSmall>
-        </StyledColumn>
-        <StyledColumn width="10%">
-          <StyledButtonSmall
-            type="button" 
-            onClick={() => handleSort('DESCENDANTS')}
-          >
-            Comments
-          </StyledButtonSmall>
-         </StyledColumn>
-        <StyledColumn width="10%">
-          <StyledButtonSmall
-            type="button" 
-            onClick={() => handleSort('SCORE')}
-          >
-            Points
-          </StyledButtonSmall>
-        </StyledColumn>
-        <StyledColumn width="10%">
-          <span>Actions</span>
-        </StyledColumn>
-      </StyledItem>
-
-      {console.log(sortedList)}
-      {sortedList.map ((item) => (
-        <Item
-          key={item.id}
-          item={item.data}
-          onRemoveItem={onRemoveItem}
-        />
-      ))}
-    </ul>
-  </div>
+    <div>
+      <ul>
+        <StyledItem>
+          <StyledColumn width="40%">
+            <StyledButtonSmall
+              type="button" 
+              onClick={() => handleSort('TITLE')}
+            >
+              Title
+            </StyledButtonSmall>
+          </StyledColumn>
+          <StyledColumn width="30%">
+            <StyledButtonSmall
+              type="button" 
+              onClick={() => handleSort('BY')}
+            >
+              Author
+            </StyledButtonSmall>
+          </StyledColumn>
+          <StyledColumn width="10%">
+            <StyledButtonSmall
+              type="button" 
+              onClick={() => handleSort('DESCENDANTS')}
+            >
+              Comments
+            </StyledButtonSmall>
+           </StyledColumn>
+          <StyledColumn width="10%">
+            <StyledButtonSmall
+              type="button" 
+              onClick={() => handleSort('SCORE')}
+            >
+              Points
+            </StyledButtonSmall>
+          </StyledColumn>
+          <StyledColumn width="10%">
+            <span>Actions</span>
+          </StyledColumn>
+        </StyledItem>
+        {sortedList.filter(item => {
+          for (let key in item.data) {
+            if(item.data.title.toLowerCase().indexOf(searchTerm.toLowerCase())!=-1)
+              return item
+          }
+        }).map ((item) => (
+          <Item
+            key={item.id}
+            item={item.data}
+            onRemoveItem={onRemoveItem}
+          />
+        ))}
+      </ul>
+    </div>
   );
 };
 
