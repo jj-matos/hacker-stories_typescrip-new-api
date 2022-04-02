@@ -52,7 +52,7 @@ type Story = {
   by: string;
   descendants: number;
   score: number;
-  kids: Array<T>;
+  kids: Array<number>;
   time: number;
   type: string;
 };
@@ -89,6 +89,7 @@ const List = ({ list, searchTerm, onRemoveItem }: ListProps) => {
     <div>
       <ul>
         <StyledItem>
+          {console.log(list)}
           <StyledColumn width="40%">
             <StyledButtonSmall
               type="button" 

@@ -164,7 +164,7 @@ const App = () => {
 //Fetches individual stories by id, stores them in an array, and updates data in the app state
 //===========================================================================================
   const getAsyncStories = async (fetchedIdList) => {
-    console.log('1-Promise called');
+    console.log('Promise called:');
     console.log(fetchedIdList.data);
     
     const storiesArray = [];
@@ -174,11 +174,10 @@ const App = () => {
         async (item) => {
           const story = await axios.get(`https://hacker-news.firebaseio.com/v0/item/${item}.json`);
           storiesArray.push(story);
-          console.log(story);
         }
       )
     )
-    console.log('Dispaching');
+    console.log('Dispaching:');
     console.log(storiesArray);
 
     dispatchStories({
@@ -188,15 +187,18 @@ const App = () => {
 
   };
 
-//=======================================================================
-//Fetches stories id's list from API, following an url change or an event
-//=======================================================================
+//===================================================
+// Fetches stories id's list from API, 
+// following an url change or an event,
+// and updates state data with individual items array
+// referenced to the id's in the initial id's list
+//===================================================
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
     try {
       const fetchedIdList = await axios.get(url);
-      console.log('Data fetched');
+      console.log('Data fetched:');
       console.log(fetchedIdList.data);
 
       await getAsyncStories(fetchedIdList);
@@ -256,12 +258,14 @@ const App = () => {
   };
 
 //=========================================
-//Changes url following submit button click
+// Handles submit button click triggers:
+// - Fetches id list from url
+// - 
 //=========================================
   const handleSearchSubmit = (
    event: React.FormEvent<HTMLFormElement>
   ) => {
-    setUrl(`${API_ENDPOINT}`);
+    handleFetchStories();
 
     event.preventDefault();
   };
