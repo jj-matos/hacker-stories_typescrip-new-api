@@ -39,10 +39,10 @@ const StyledButtonSmall = styled(StyledButton)`
 
 const SORTS = {
   NONE: (list) => list,
-  TITLE: (list) => sortBy(list, 'title'),
-  BY: (list) => sortBy(list, 'by'),
-  DESCENDANTS: (list) => sortBy(list, 'descendants').reverse(),
-  SCORE: (list) => sortBy(list, 'score').reverse(),
+  TITLE: (list) => sortBy(list, 'data.title'),
+  BY: (list) => sortBy(list, 'data.by'),
+  DESCENDANTS: (list) => sortBy(list, 'data.descendants').reverse(),
+  SCORE: (list) => sortBy(list, 'data.score').reverse(),
 };
 
 type Story = {
@@ -133,7 +133,7 @@ const List = ({ list, searchTerm, onRemoveItem }: ListProps) => {
           }
         }).map ((item) => (
           <Item
-            key={item.id}
+            key={item.data.id}
             item={item.data}
             onRemoveItem={onRemoveItem}
           />

@@ -145,11 +145,6 @@ const App = () => {
     'search',
     'React'
   );
-  
- /*const [sortOption, setSortOption] = useSemiPersistentState(
-    'sort',
-    ''
-  );*/
 
   const [url, setUrl] = React.useState(
     `${API_ENDPOINT}`
