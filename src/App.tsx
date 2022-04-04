@@ -1,10 +1,11 @@
-//#######
-//Imports
-//#######
+//#########
+// Imports
+//#########
+
 import * as React from 'react';
 import axios from 'axios';
 
-import { SearchForm } from './SearchForm.tsx';
+import { SearchForm, StyledButtonLarge, StyledColumn } from './SearchForm.tsx';
 import { List } from './List.tsx';
 
 import styled from 'styled-components';
@@ -12,8 +13,9 @@ import styled from 'styled-components';
 import { ReactComponent as Check } from './check.svg';
 
 //#######
-//Styling
+// Style
 //#######
+
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
@@ -28,18 +30,20 @@ const StyledHeadlinePrimary = styled.h1`
   letter-spacing: 2px;
 `;
 
-//#########################################################################
-//Constants, Variables & Functions definition defined outside App component
-//#########################################################################
+//################################################################
+// Constants, Variables & Functions defined outside App component
+//################################################################
 
-//========================================
-//Fetching data url with stories id's list
-//========================================
+//==========================================
+// Fetching data url with stories id's list
+//==========================================
+
 const API_ENDPOINT = 'https://hacker-news.firebaseio.com/v0/topstories.json';
 
-//===============================================
-//Saves searchTerm on local storage (Client Side)
-//===============================================
+//=================================================
+// Saves searchTerm on local storage (Client Side)
+//=================================================
+
 interface StoriesFetchInitAction {
   type: 'STORIES_FETCH_INIT';
 }
@@ -66,14 +70,14 @@ type StoriesAction =
 
 const useSemiPersistentState = (
   key: string,
-  initialState: string
- ): [string, (newValue: string) => void] => {
-  const [value, setValue] = React.useState(
+  initialState: string,
+ ): [Array<string>, (newValue: Array<string>) => void] => {
+  const [value, setValue] = React.useState([
     localStorage.getItem(key) || initialState
-  );
+  ]);
 
   React.useEffect(() => {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, value[value.length -1]);
     console.log('Search (input) value saved on local storage:');
     console.log(localStorage.getItem(key) || initialState);
   }, [value, key]);
@@ -83,9 +87,10 @@ const useSemiPersistentState = (
   return [value, setValue];
 };
 
-//=========================
-//Manages App state changes
-//=========================
+//===========================
+// Manages App state changes
+//===========================
+
 type StoriesState = {
   data: Stories;
   isLoading: boolean;
@@ -132,19 +137,25 @@ const storiesReducer = (
   }
 };
 
-//#############
-//App component
-//#############
+const getLastSubmits = (submits) => submits.slice(-5);
+
+//###############
+// App component
+//###############
+
 const App = () => {
   console.log('App renders');
 
-//=====
-//Hooks
-//=====
-  const [searchTerm, setSearchTerm] = useSemiPersistentState(
+//=======
+// Hooks
+//=======
+
+  const [searches, setSearches] = useSemiPersistentState(
     'search',
     'React'
   );
+
+  const [submits, setSubmits] = React.useState([]);
 
   const [url, setUrl] = React.useState(
     `${API_ENDPOINT}`
@@ -155,9 +166,11 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-//===========================================================================================
-//Fetches individual stories by id, stores them in an array, and updates data in the app state
-//===========================================================================================
+//============================================================
+// Fetches individual stories by id, stores them in an array,
+// and updates data in the app state
+//============================================================
+
   const getAsyncStories = async (fetchedIdList) => {
     console.log('Promise called:');
     console.log(fetchedIdList.data);
@@ -182,12 +195,13 @@ const App = () => {
 
   };
 
-//===================================================
+//====================================================
 // Fetches stories id's list from API, 
 // following an url change or an event,
 // and updates state data with individual items array
 // referenced to the id's in the initial id's list
-//===================================================
+//====================================================
+
   const handleFetchStories = React.useCallback(async () => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
@@ -219,7 +233,7 @@ const App = () => {
     } catch (error) {
       dispatchStories({ type: 'STORIES_FETCH_FAILURE' });
     }
-  }, [url]);
+  }, [submits]);
 
   React.useEffect(() => {
     handleFetchStories();
@@ -231,19 +245,21 @@ const App = () => {
     setSortOption(sortOption);
   };*/
 
-//===============================================
-//Changes searchTerm following input field change
-//===============================================
+//=================================================
+// Changes searchTerm following input field change
+//=================================================
+
   const handleSearchInput = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setSearchTerm(event.target.value);
-    console.log('setSearchTerm called');
+    setSearches(searches.concat(event.target.value));
+    console.log('setSearches called');
   };
 
-//================================
-//Removes story from rendered list
-//================================
+//==================================
+// Removes story from rendered list
+//==================================
+
   const handleRemoveStory = (item: Story) => {
     
     dispatchStories({
@@ -252,36 +268,47 @@ const App = () => {
     });
   };
 
-//=========================================
+//=======================================
 // Handles submit button click triggers:
 // - Fetches id list from url
-// - 
-//=========================================
+// - Saves search to be rendered with 
+//   previous searches buttons
+//=======================================
+
   const handleSearchSubmit = (
    event: React.FormEvent<HTMLFormElement>
   ) => {
-    handleFetchStories();
+    
+    setSubmits(submits.concat(lastSearch));
+
+    handleSearch(lastSearch);
 
     event.preventDefault();
   };
 
-  /*const setSort = React.useCallback(()) => {
-    const [sort, setSort] = React.useState ([]);
+//=======================
+// Handles last searches 
+//=======================
 
-    <List
-      list={stories.data}
-      sortList={sortType}
-      onRemoveItem={handleRemoveStory}
-    />
-  }
-  
-  React.useEffect(()) => {
-    setSort()
-  }, [setSort]);*/
+  const handlePreviousSearch = (searchTerm) => {
+    handleSearch(searchTerm);
+  };
 
-//===========
-//renders App
-//===========
+//##################
+// Handles searches
+//##################
+
+  const handleSearch = (searchTerm) => {
+    setSearches(searches.concat(searchTerm));
+  };
+
+  const lastSubmits = getLastSubmits(submits);
+  const lastSearch = searches[searches.length - 1];
+
+//=============
+// Renders App
+//=============
+
   return (
     <StyledContainer>
       {console.log(stories.data)}
@@ -289,10 +316,22 @@ const App = () => {
       <StyledHeadlinePrimary>My Hacker Stories</StyledHeadlinePrimary>
 
       <SearchForm
-        searchTerm={searchTerm}
+        searchTerm={lastSearch}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
+
+      {lastSubmits.map((searchTerm, index) => (
+        <StyledColumn>
+          <StyledButtonLarge
+            key={searchTerm+index}
+            type="button"
+            onClick={() => handlePreviousSearch(searchTerm)}
+          >
+            {searchTerm}
+          </StyledButtonLarge>
+        </StyledColumn>
+      ))}
 
       <hr />
       {stories.isError && <p>Something went wrong ...</p>}
@@ -302,9 +341,10 @@ const App = () => {
       ) : (
         <>
         {console.log(stories.data)}
+        {console.log(lastSearch)}
         <List
           list={stories.data}
-          searchTerm={searchTerm}
+          searchTerm={lastSearch}
           onRemoveItem={handleRemoveStory}
         />
         </>
@@ -313,9 +353,10 @@ const App = () => {
   );
 };
 
-//#######
-//Exports
-//#######
+//#########
+// Exports
+//#########
+
 export default App;
 
 export { storiesReducer, SearchForm, List};

@@ -1,7 +1,13 @@
+//#########
+// Imports
+//#########
 import * as React from 'react';
 
 import styled from 'styled-components';
 
+//#######
+// Style
+//#######
 const StyledLabel = styled.label`
   border-top: 1px solid #171212;
   border-left: 1px solid #171212;
@@ -16,6 +22,9 @@ const StyledInput = styled.input`
   font-size: 24px;
 `;
 
+//#############################################################
+// Constants, Variables & Functions defined outside components
+//#############################################################
 type InputWithLabelProps = {
   id: string;
   value: string;
@@ -25,6 +34,9 @@ type InputWithLabelProps = {
   children: React.ReactNode;
 };
 
+//##########################
+// InputWithLabel component
+//##########################
 const InputWithLabel = ({
   id,
   value,

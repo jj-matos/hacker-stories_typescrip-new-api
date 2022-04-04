@@ -1,9 +1,15 @@
+//#########
+// Imports
+//#########
 import * as React from 'react';
 
 import styled from 'styled-components';
 
 import { InputWithLabel } from './InputWithLabel.tsx';
 
+//#######
+// Style
+//#######
 const StyledSearchForm = styled.form`
   padding: 10px 0 20px 0;
   display: flex;
@@ -44,12 +50,19 @@ const StyledButtonLarge = styled(StyledButton)`
   padding: 10px;
 `;
 
+//#############################################################
+// Constants, Variables & Functions defined outside components
+//#############################################################
 type SearchFormProps = {
   searchTerm: string;
   onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
+
+//######################
+// SearchForm component
+//######################
 const SearchForm = ({
   searchTerm,
   onSearchInput,
@@ -72,37 +85,8 @@ const SearchForm = ({
           Submit
         </StyledButtonLarge>
       </StyledSearchForm>
-      <StyledSearchForm display="block" onSubmit={onSearchSubmit}>
-        <StyledItem>
-          <StyledColumn>
-            <StyledButtonLarge type="submit">
-              Search1
-            </StyledButtonLarge>
-          </StyledColumn>
-          <StyledColumn>
-            <StyledButtonLarge type="submit">
-              Search2
-            </StyledButtonLarge>
-          </StyledColumn>
-          <StyledColumn>
-            <StyledButtonLarge type="submit">
-              Search3
-            </StyledButtonLarge>
-           </StyledColumn>
-          <StyledColumn>
-            <StyledButtonLarge type="submit">
-              Search4
-            </StyledButtonLarge>
-          </StyledColumn>
-          <StyledColumn>
-            <StyledButtonLarge type="submit">
-             Search5
-            </StyledButtonLarge>
-          </StyledColumn>
-        </StyledItem>
-      </StyledSearchForm>
     </div>
   );
 };
 
-export { SearchForm };
+export { SearchForm, StyledButtonLarge, StyledColumn };

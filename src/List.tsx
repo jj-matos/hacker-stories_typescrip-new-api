@@ -1,8 +1,14 @@
+//#########
+// Imports
+//#########
 import * as React from 'react';
 import { sortBy } from 'lodash';
 
 import styled from 'styled-components';
 
+//#######
+// Style
+//#######
 const StyledItem = styled.li`
   display: flex;
   align-items: center;
@@ -37,6 +43,9 @@ const StyledButtonSmall = styled(StyledButton)`
   padding: 5px;
 `;
 
+//#############################################################
+// Constants, Variables & Functions defined outside components
+//#############################################################
 const SORTS = {
   NONE: (list) => list,
   TITLE: (list) => sortBy(list, 'data.title'),
@@ -66,6 +75,9 @@ type ListProps = {
   onRemoveItem: (item: Story) => void;
 };
 
+//################
+// List component
+//################
 const List = ({ list, searchTerm, onRemoveItem }: ListProps) => {
   const [sort, setSort] = React.useState({
     sortKey: 'NONE',
@@ -143,11 +155,17 @@ const List = ({ list, searchTerm, onRemoveItem }: ListProps) => {
   );
 };
 
+//########################################################################
+// Constants, Variables & Functions definition defined outside components
+//########################################################################
 type ItemProps = {
   item: Story;
   onRemoveItem: (item: Story) => void;
 };
 
+//################
+// Item component
+//################
 const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
     {console.log('Item component accessed')}
